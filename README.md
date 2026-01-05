@@ -137,7 +137,14 @@ python app.py
 ### 3️⃣ Access the System
 http://127.0.0.1:5000
 
-## 📌 Note: In development mode, OTPs are also printed in the console.
+#### 📌 Note: In development mode, OTPs are also printed in the console.
+
+#👨‍💻 Author
+
+Amit Sutradhar
+CSE | Cybersecurity | Cryptography | Secure Systems
+
+“Security is not a feature — it’s the foundation.”
 
 
 
