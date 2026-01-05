@@ -139,7 +139,7 @@ http://127.0.0.1:5000
 
 #### 📌 Note: In development mode, OTPs are also printed in the console.
 
-#👨‍💻 Author
+# 👨‍💻 Author
 
 Amit Sutradhar
 CSE | Cybersecurity | Cryptography | Secure Systems
