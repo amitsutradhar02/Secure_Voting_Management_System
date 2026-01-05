@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Secure Voting System{% endblock %}</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" 
+          integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" 
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}times-circle{% elif category == 'warning' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                        <span>{{ message }}</span>
+                        <button class="flash-close" onclick="this.parentElement.remove()">×</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Navigation (if logged in) -->
+    {% if current_user %}
+    <nav class="main-nav">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <i class="fas fa-vote-yea"></i>
+                <span>Secure Voting</span>
+            </div>
+            
+            <ul class="nav-menu">
+                <li><a href="{{ url_for('user.dashboard') }}"><i class="fas fa-home"></i> Dashboard</a></li>
+                <li><a href="{{ url_for('election.list_elections') }}"><i class="fas fa-poll"></i> Elections</a></li>
+                <li><a href="{{ url_for('post.list_posts') }}"><i class="fas fa-bullhorn"></i> Announcements</a></li>
+                
+                {% if current_user.role == 'voter' %}
+                <li><a href="{{ url_for('vote.history') }}"><i class="fas fa-history"></i> My Votes</a></li>
+                <li><a href="{{ url_for('support.create_ticket') }}"><i class="fas fa-headset"></i> Support</a></li>
+                {% endif %}
+                
+                {% if current_user.role == 'admin' %}
+                <li><a href="{{ url_for('user.list_users') }}"><i class="fas fa-users"></i> Users</a></li>
+                <li><a href="{{ url_for('support.admin_tickets') }}"><i class="fas fa-headset"></i> Support Tickets</a></li>
+                {% endif %}
+            </ul>
+            
+            <div class="nav-user">
+                <div class="user-dropdown">
+                    <button class="user-btn">
+                        <i class="fas fa-user-circle"></i>
+                        <span>{{ current_user.username }}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    <div class="dropdown-menu">
+                        <a href="{{ url_for('user.profile') }}"><i class="fas fa-user"></i> Profile</a>
+                        <a href="{{ url_for('user.change_password') }}"><i class="fas fa-key"></i> Change Password</a>
+                        <hr>
+                        <a href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    {% endif %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2025 Secure National Election & Voting Management System | Bangladesh</p>
+    </footer>
+    
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

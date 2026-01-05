@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Manage Users{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-users-cog"></i> User Management</h1>
+    </div>
+    <div class="table-container">
+        <table class="data-table">
+        <thead>
+            <tr>
+                <th>Username</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ 'Active' if user.is_active else 'Inactive' }}</td>
+                <td>
+                    <div class="action-buttons">
+                        {% if user.is_active %}
+                        <a href="{{ url_for('user.deactivate_user', user_id=user.user_id) }}" class="btn-warning btn-sm">
+                            <i class="fas fa-ban"></i> Deactivate
+                        </a>
+                        {% else %}
+                        <a href="{{ url_for('user.activate_user', user_id=user.user_id) }}" class="btn-success btn-sm">
+                            <i class="fas fa-check"></i> Activate
+                        </a>
+                        {% endif %}
+                        {% if user.role == 'voter' %}
+                        <form method="POST" action="{{ url_for('user.delete_user', user_id=user.user_id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to permanently delete this user? This action cannot be undone!');">
+                            <button type="submit" class="btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+</div>
+
+<style>
+.table-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 6px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-warning {
+    background: #fff3e0;
+    color: #f57c00;
+    border: 1px solid #ffb74d;
+}
+
+.btn-warning:hover {
+    background: #ffe0b2;
+}
+
+.btn-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #81c784;
+}
+
+.btn-success:hover {
+    background: #c8e6c9;
+}
+
+.btn-danger {
+    background: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef5350;
+}
+
+.btn-danger:hover {
+    background: #ffcdd2;
+}
+</style>
+{% endblock %}

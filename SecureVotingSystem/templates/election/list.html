@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Elections{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-poll-h"></i> Elections</h1>
+        {% if role == 'admin' %}
+        <a href="{{ url_for('election.create_election') }}" class="btn-primary">
+            <i class="fas fa-plus"></i> Create Election
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="elections-grid">
+        {% if elections %}
+            {% for election in elections %}
+            <div class="election-card">
+                <div class="election-status status-{{ election.status }}">
+                    {{ election.status|upper }}
+                </div>
+                
+                <h3>{{ election.title }}</h3>
+                
+                <div class="election-dates">
+                    <div class="date-item">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>{{ election.start_date|format_date_short }}</span>
+                    </div>
+                    <div class="date-item">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>{{ election.end_date|format_date_short }}</span>
+                    </div>
+                </div>
+
+                <div class="election-actions">
+                    <a href="{{ url_for('election.view_election', election_id=election.election_id) }}" 
+                       class="btn-outline">
+                        <i class="fas fa-eye"></i> View Details
+                    </a>
+                    
+                    {% if role == 'voter' and election.status == 'active' %}
+                    <a href="{{ url_for('vote.cast_vote', election_id=election.election_id) }}" 
+                       class="btn-primary">
+                        <i class="fas fa-vote-yea"></i> Vote Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No Elections Available</h3>
+                <p>There are no elections at the moment.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.btn-primary {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.elections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.election-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.election-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.election-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-upcoming {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-completed {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.election-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    padding-right: 80px;
+}
+
+.election-dates {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.date-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.election-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-outline {
+    flex: 1;
+    padding: 10px 20px;
+    border: 2px solid #667eea;
+    background: white;
+    color: #667eea;
+    border-radius: 8px;
+    text-decoration: none;
+    text-align: center;
+    font-weight: 600;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+    background: #667eea;
+    color: white;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 15px;
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.empty-state p {
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .elections-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+}
+</style>
+{% endblock %}

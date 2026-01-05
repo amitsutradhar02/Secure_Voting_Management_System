@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}All Support Tickets{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-headset"></i> Support Tickets</h1>
+        <span class="badge badge-info">{{ tickets|length }} Total Tickets</span>
+    </div>
+    <div class="tickets-grid">
+        {% for ticket in tickets %}
+        <div class="ticket-admin-card">
+            <div class="ticket-header">
+                <div>
+                    <h4>{{ ticket.subject }}</h4>
+                    <p class="ticket-meta">By: <strong>{{ ticket.username }}</strong> | #{{ ticket.ticket_id }}</p>
+                </div>
+                <div class="ticket-badges">
+                    <span class="badge badge-{{ ticket.status }}">{{ ticket.status|upper }}</span>
+                    <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority|upper }}</span>
+                </div>
+            </div>
+            <div class="ticket-message">
+                <p>{{ ticket.message[:150] }}{% if ticket.message|length > 150 %}...{% endif %}</p>
+            </div>
+            <div class="ticket-actions">
+                <a href="{{ url_for('support.respond_ticket', ticket_id=ticket.ticket_id) }}" class="btn-primary btn-sm">
+                    <i class="fas fa-reply"></i> Respond
+                </a>
+                <span class="ticket-date">{{ ticket.created_at|time_ago }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+<style>
+.tickets-grid { display: grid; gap: 20px; }
+.ticket-admin-card { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+.ticket-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+.ticket-meta { font-size: 13px; color: #666; margin-top: 5px; }
+.ticket-message { margin-bottom: 15px; color: #333; line-height: 1.6; }
+.ticket-actions { display: flex; justify-content: space-between; align-items: center; padding-top: 15px; border-top: 2px solid #f0f0f0; }
+.ticket-date { font-size: 13px; color: #999; }
+</style>
+{% endblock %}

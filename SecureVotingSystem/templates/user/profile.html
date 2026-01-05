@@ -1,0 +1,308 @@
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-user"></i> My Profile</h1>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <div class="profile-avatar">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="profile-info">
+                <h2>{{ user.full_name }}</h2>
+                <p class="username">@{{ user.username }}</p>
+            </div>
+            {% if user.is_verified %}
+            <div class="verified-badge">
+                <i class="fas fa-check-circle"></i> Verified
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="profile-details">
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-envelope"></i> Email:
+                </span>
+                <span class="detail-value">{{ user.email }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-user-tag"></i> Role:
+                </span>
+                <span class="detail-value">
+                    <span class="role-badge role-{{ user.role }}">{{ user.role|upper }}</span>
+                </span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label">
+                    <i class="fas fa-shield-alt"></i> Status:
+                </span>
+                <span class="detail-value">
+                    <span class="status-badge status-{{ 'verified' if user.is_verified else 'unverified' }}">
+                        {{ 'Verified' if user.is_verified else 'Unverified' }}
+                    </span>
+                </span>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="{{ url_for('user.edit_profile') }}" class="btn-primary">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+            <a href="{{ url_for('user.change_password') }}" class="btn-secondary">
+                <i class="fas fa-key"></i> Change Password
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.profile-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    margin-bottom: 40px;
+    padding-bottom: 30px;
+    border-bottom: 2px solid #f0f0f0;
+    position: relative;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 60px;
+    flex-shrink: 0;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    font-size: 28px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.profile-info .username {
+    color: #666;
+    font-size: 16px;
+    margin: 0;
+}
+
+.verified-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 8px 16px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.verified-badge i {
+    color: #2e7d32;
+}
+
+.profile-details {
+    margin-bottom: 30px;
+}
+
+.detail-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.detail-row:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.detail-label {
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.detail-label i {
+    color: #667eea;
+    width: 20px;
+}
+
+.detail-value {
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.role-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.role-admin {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.role-voter {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-badge {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-verified {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-unverified {
+    background: #fff3e0;
+    color: #f57c00;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 15px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    flex: 1;
+    padding: 12px 24px;
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+@media (max-width: 768px) {
+    .profile-card {
+        padding: 25px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .verified-badge {
+        position: static;
+        margin-top: 15px;
+    }
+
+    .detail-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .profile-actions {
+        flex-direction: column;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+}
+</style>
+{% endblock %}

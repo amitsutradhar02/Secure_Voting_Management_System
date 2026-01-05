@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure National Election & Voting Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .grid-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            perspective: 1000px;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.4), transparent);
+            opacity: 0.3;
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.2; }
+            50% { opacity: 0.5; }
+        }
+
+        .shape {
+            position: absolute;
+            border: 2px solid rgba(0, 255, 255, 0.3);
+            animation: morph 8s ease-in-out infinite;
+        }
+
+        @keyframes morph {
+            0%, 100% {
+                border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+                transform: rotate(0deg) scale(1);
+            }
+            25% {
+                border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%;
+                transform: rotate(90deg) scale(1.1);
+            }
+            50% {
+                border-radius: 50% 50% 50% 50% / 50% 50% 50% 50%;
+                transform: rotate(180deg) scale(0.9);
+            }
+            75% {
+                border-radius: 70% 30% 40% 60% / 40% 70% 60% 30%;
+                transform: rotate(270deg) scale(1.05);
+            }
+        }
+
+        .hero {
+            text-align: center;
+            color: white;
+            padding: 60px 20px 40px;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 60vh;
+        }
+
+        .hero > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: textGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes textGlow {
+            0%, 100% {
+                text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+            50% {
+                text-shadow: 0 0 30px rgba(255, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.3), 2px 2px 4px rgba(0, 0, 0, 0.3);
+            }
+        }
+
+        .hero p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3), 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            padding: 12px 30px;
+            font-size: 15px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cta-primary {
+            background: white;
+            color: #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3), 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        .cta-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: white;
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.4), 0 0 40px rgba(0, 255, 255, 0.2);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 36px;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .feature-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 20px;
+            color: white;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+            flex-shrink: 0;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+
+            .hero {
+                padding: 40px 20px 30px;
+                max-height: none;
+                min-height: 50vh;
+            }
+
+            .hero h1 {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+
+            .hero p {
+                font-size: 14px;
+                margin-bottom: 30px;
+            }
+
+            .cta-btn {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 15px;
+                padding: 20px;
+            }
+
+            .feature-card {
+                padding: 20px;
+            }
+
+            .feature-icon {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="grid-container" id="gridContainer"></div>
+    <div class="hero">
+        <h1>🗳️ Secure National Election & Voting Management System</h1>
+        <p>Empowering Democracy Through Secure, Transparent, and Encrypted Voting</p>
+        
+        <div class="cta-buttons">
+            <a href="{{ url_for('auth.login') }}" class="cta-btn cta-primary">
+                <i class="fas fa-sign-in-alt"></i>
+                Login to Vote
+            </a>
+            <a href="{{ url_for('auth.register') }}" class="cta-btn cta-secondary">
+                <i class="fas fa-user-plus"></i>
+                Register Now
+            </a>
+        </div>
+    </div>
+
+    <div class="features">
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h3>Military-Grade Encryption</h3>
+            <p>All voter data and votes are encrypted using RSA + ECC multi-level encryption from scratch</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <h3>Two-Factor Authentication</h3>
+            <p>Secure your account with OTP-based two-factor authentication</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-lock"></i>
+            </div>
+            <h3>Data Integrity</h3>
+            <p>HMAC verification ensures your vote cannot be tampered with</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">
+                <i class="fas fa-check-double"></i>
+            </div>
+            <h3>Transparent Results</h3>
+            <p>Real-time election results with complete transparency</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Secure National Election & Voting Management System | Bangladesh</p>
+        <p>Built with RSA, ECC, HMAC, and Flask</p>
+    </footer>
+
+    <script>
+        const gridContainer = document.getElementById('gridContainer');
+
+        // Create horizontal grid lines
+        for (let i = 0; i < 30; i++) {
+            const line = document.createElement('div');
+            line.className = 'grid-line';
+            line.style.width = '100%';
+            line.style.height = '1px';
+            line.style.top = (i * 50) + 'px';
+            line.style.animationDelay = (i * 0.1) + 's';
+            gridContainer.appendChild(line);
+        }
+
+        // Create vertical grid lines
+        for (let i = 0; i < 40; i++) {
+            const line = document.createElement('div');
+            line.className = 'grid-line';
+            line.style.width = '1px';
+            line.style.height = '100%';
+            line.style.left = (i * 50) + 'px';
+            line.style.animationDelay = (i * 0.1 + 0.5) + 's';
+            gridContainer.appendChild(line);
+        }
+
+        // Create morphing shapes
+        const shapeCount = 5;
+        for (let i = 0; i < shapeCount; i++) {
+            const shape = document.createElement('div');
+            shape.className = 'shape';
+            const size = Math.random() * 200 + 100;
+            shape.style.width = size + 'px';
+            shape.style.height = size + 'px';
+            shape.style.left = Math.random() * 100 + '%';
+            shape.style.top = Math.random() * 100 + '%';
+            shape.style.animationDelay = (i * 1.6) + 's';
+            shape.style.animationDuration = (Math.random() * 4 + 6) + 's';
+            gridContainer.appendChild(shape);
+        }
+    </script>
+</body>
+</html>

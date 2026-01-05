@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth_style.css') }}">
+</head>
+
+<body>
+    <a href="{{ url_for('index') }}" class="home-btn">
+        <i class="fas fa-home"></i> Home
+    </a>
+    
+    <div class="grid-container" id="gridContainer"></div>
+
+    <div class="login-container">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+
+        <div class="header">
+            <div class="scan-line"></div>
+            <h1>ACCESS</h1>
+            <p class="status-text">System Ready</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="{{ url_for('auth.login') }}" method="POST" id="loginForm">
+            <div class="form-group">
+                <label class="form-label">User Identification</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-user field-icon"></i>
+                    <input type="text" name="username" class="input-field" placeholder="Enter username" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Security Code</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-lock field-icon"></i>
+                    <input type="password" id="passwordField" name="password" class="input-field" placeholder="Enter password" required>
+                    <i class="fa-solid fa-eye toggle-icon" id="togglePassword"></i>
+                </div>
+            </div>
+
+            <div class="checkbox-group">
+                <label class="custom-checkbox">
+                    <input type="checkbox" id="rememberMe">
+                    <span>Remember Session</span>
+                </label>
+                <a href="{{ url_for('auth.forgot_password') }}" class="forgot-link">Recovery Mode?</a>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Initialize Login
+            </button>
+        </form>
+
+        <div class="divider">
+            <span class="divider-text">NEW USER?</span>
+        </div>
+
+        <div class="register-link">
+            <a href="{{ url_for('auth.register') }}">CREATE NEW ACCOUNT →</a>
+        </div>
+
+        <div class="footer-credit">
+            <p>──Secure National Election & Voting System──</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth_style.js') }}"></script>
+</body>
+</html>

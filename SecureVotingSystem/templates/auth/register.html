@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign In/Up - Secure Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth_screens/style1.css') }}">
+</head>
+
+<body>
+    <a href="{{ url_for('index') }}" class="home-btn">
+        <i class="fas fa-home"></i> Home
+    </a>
+    
+    <div class="auth-wrapper" id="authWrapper">
+        <!-- Register Form -->
+        <div class="auth-form-box register-form-box">
+            <form action="{{ url_for('auth.register') }}" method="POST">
+                <h1>Create Account</h1>
+                <span>Register for the Secure Voting System</span>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="alert alert-error" style="margin: 10px 0; padding: 8px; border-radius: 5px; background: #ffebee; color: #c62828;">
+                                    {{ message }}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success" style="margin: 10px 0; padding: 8px; border-radius: 5px; background: #e8f5e9; color: #2e7d32;">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <input type="text" name="username" placeholder="Username" required />
+                <input type="text" name="full_name" placeholder="Full Name" required />
+                <input type="email" name="email" placeholder="Email Address" required />
+                <input type="text" name="phone" placeholder="Phone Number (Optional)" />
+                <div style="position: relative; width: 100%;">
+                    <input type="text" name="nid" id="nid" placeholder="National ID" required oninput="checkNIDRequirements(this.value)" onfocus="showNIDRequirements()" onblur="hideNIDRequirements()" style="width: 100%;" />
+                    <div id="nidRequirements" style="display: none; background: rgba(255, 255, 255, 0.98); border: 2px solid #667eea; border-radius: 8px; padding: 15px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: absolute; z-index: 1000; top: 100%; left: 0; width: 100%; max-width: 400px;">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;">National ID Requirements:</div>
+                        <div id="nidReqList" style="font-size: 13px;">
+                            <div id="req-digits-only" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>Must contain only digits (0-9)</span>
+                            </div>
+                            <div id="req-length-10" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>10 digits (old format)</span>
+                            </div>
+                            <div id="req-length-13" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>13 digits (new format)</span>
+                            </div>
+                            <div id="req-length-17" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>17 digits (smart card format)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="position: relative; width: 100%;">
+                    <input type="password" name="password" id="password" placeholder="Password" required oninput="checkPasswordRequirements(this.value)" onfocus="showPasswordRequirements(); hideNIDRequirements();" onblur="hidePasswordRequirements()" style="width: 100%;" />
+                    <div id="passwordRequirements" style="display: none; background: rgba(255, 255, 255, 0.98); border: 2px solid #667eea; border-radius: 8px; padding: 15px; margin-top: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); position: absolute; z-index: 1000; top: 100%; left: 0; width: 100%; max-width: 400px;">
+                        <div style="font-weight: 600; margin-bottom: 10px; color: #333; font-size: 14px;">Password Requirements:</div>
+                        <div id="reqList" style="font-size: 13px;">
+                            <div id="req-length" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>At least 8 characters</span>
+                            </div>
+                            <div id="req-lowercase" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>One lowercase letter (a-z)</span>
+                            </div>
+                            <div id="req-uppercase" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>One uppercase letter (A-Z)</span>
+                            </div>
+                            <div id="req-number" style="display: flex; align-items: center; gap: 8px; margin-bottom: 5px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>One number (0-9)</span>
+                            </div>
+                            <div id="req-special" style="display: flex; align-items: center; gap: 8px;">
+                                <i class="fas fa-circle" style="font-size: 8px; color: #ccc;"></i>
+                                <span>One special character (!@#$%^&*...)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password" required oninput="checkPasswordMatch()" onfocus="hidePasswordRequirements(); hideNIDRequirements();" />
+                <div id="passwordMatch" style="display: none; font-size: 12px; margin-top: -10px; margin-bottom: 10px;"></div>
+                
+                <!-- Role is always 'voter' - Admin accounts are created separately -->
+                <input type="hidden" name="role" value="voter">
+                
+                <button type="submit">Sign Up</button>
+                <div class="mobile-switch">
+                    <p>Already have an account?</p>
+                    <button type="button" id="mobileLoginBtn">Sign In</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Login Form -->
+        <div class="auth-form-box login-form-box">
+            <form action="{{ url_for('auth.login') }}" method="POST">
+                <h1>Sign In</h1>
+                <span>Login to access the Voting System</span>
+                
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            {% if category == 'error' %}
+                                <div class="alert alert-error" style="margin: 10px 0; padding: 8px; border-radius: 5px; background: #ffebee; color: #c62828;">
+                                    {{ message }}
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success" style="margin: 10px 0; padding: 8px; border-radius: 5px; background: #e8f5e9; color: #2e7d32;">
+                                    {{ message }}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <input type="text" name="username" placeholder="Username" required />
+                <input type="password" name="password" placeholder="Password" required />
+                <a href="{{ url_for('auth.forgot_password') }}">Forgot your password?</a>
+                <button type="submit">Sign In</button>
+                <div class="mobile-switch">
+                    <p>Don't have an account?</p>
+                    <button type="button" id="mobileRegisterBtn">Sign Up</button>
+                </div>
+            </form>
+        </div>
+        
+        <!-- Sliding Panel -->
+        <div class="slide-panel-wrapper">
+            <div class="slide-panel">
+                <div class="panel-content panel-content-left">
+                    <h1>Welcome Back!</h1>
+                    <p>Stay connected by logging in with your credentials and continue your voting experience</p>
+                    <button class="transparent-btn" id="loginBtn">Sign In</button>
+                </div>
+                <div class="panel-content panel-content-right">
+                    <h1>Hey There!</h1>
+                    <p>Begin your democratic journey by creating an account with us today</p>
+                    <button class="transparent-btn" id="registerBtn">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const registerBtn = document.getElementById('registerBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const mobileRegisterBtn = document.getElementById('mobileRegisterBtn');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const authWrapper = document.getElementById('authWrapper');
+
+        if (registerBtn) {
+            registerBtn.addEventListener('click', () => {
+                authWrapper.classList.add("panel-active");
+            });
+        }
+
+        if (loginBtn) {
+            loginBtn.addEventListener('click', () => {
+                authWrapper.classList.remove("panel-active");
+            });
+        }
+
+        if (mobileRegisterBtn) {
+            mobileRegisterBtn.addEventListener('click', () => {
+                authWrapper.classList.add("panel-active");
+            });
+        }
+
+        if (mobileLoginBtn) {
+            mobileLoginBtn.addEventListener('click', () => {
+                authWrapper.classList.remove("panel-active");
+            });
+        }
+
+        let requirementsTimeout;
+        let nidRequirementsTimeout;
+        
+        function showPasswordRequirements() {
+            clearTimeout(requirementsTimeout);
+            const requirements = document.getElementById('passwordRequirements');
+            if (requirements) {
+                requirements.style.display = 'block';
+            }
+        }
+        
+        function hidePasswordRequirements() {
+            // Delay hiding to allow clicking on the requirements box
+            clearTimeout(requirementsTimeout);
+            requirementsTimeout = setTimeout(function() {
+                const requirements = document.getElementById('passwordRequirements');
+                if (requirements) {
+                    requirements.style.display = 'none';
+                }
+            }, 150);
+        }
+        
+        function showNIDRequirements() {
+            clearTimeout(nidRequirementsTimeout);
+            const requirements = document.getElementById('nidRequirements');
+            if (requirements) {
+                requirements.style.display = 'block';
+            }
+        }
+        
+        function hideNIDRequirements() {
+            // Delay hiding to allow clicking on the requirements box
+            clearTimeout(nidRequirementsTimeout);
+            nidRequirementsTimeout = setTimeout(function() {
+                const requirements = document.getElementById('nidRequirements');
+                if (requirements) {
+                    requirements.style.display = 'none';
+                }
+            }, 150);
+        }
+        
+        function checkNIDRequirements(nid) {
+            if (!nid) {
+                // Reset all to unchecked state
+                updateNIDRequirement('req-digits-only', false);
+                updateNIDRequirement('req-length-10', false);
+                updateNIDRequirement('req-length-13', false);
+                updateNIDRequirement('req-length-17', false);
+                return;
+            }
+            
+            // Remove spaces
+            nid = nid.replace(/\s/g, '');
+            
+            // Check if only digits
+            const isDigitsOnly = /^\d+$/.test(nid);
+            updateNIDRequirement('req-digits-only', isDigitsOnly);
+            
+            // Check length
+            const length = nid.length;
+            updateNIDRequirement('req-length-10', length === 10);
+            updateNIDRequirement('req-length-13', length === 13);
+            updateNIDRequirement('req-length-17', length === 17);
+        }
+        
+        function updateNIDRequirement(id, isValid) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            
+            const icon = element.querySelector('i');
+            const text = element.querySelector('span');
+            
+            if (isValid) {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#4caf50';
+                text.style.color = '#4caf50';
+            } else {
+                icon.className = 'fas fa-circle';
+                icon.style.color = '#ccc';
+                text.style.color = '#666';
+            }
+        }
+        
+        function checkPasswordRequirements(password) {
+            const requirements = document.getElementById('passwordRequirements');
+            
+            if (!password) {
+                return;
+            }
+            
+            // Check each requirement
+            const checks = {
+                length: password.length >= 8,
+                lowercase: /[a-z]/.test(password),
+                uppercase: /[A-Z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+            };
+            
+            // Update icons
+            updateRequirement('req-length', checks.length);
+            updateRequirement('req-lowercase', checks.lowercase);
+            updateRequirement('req-uppercase', checks.uppercase);
+            updateRequirement('req-number', checks.number);
+            updateRequirement('req-special', checks.special);
+        }
+        
+        function updateRequirement(id, isValid) {
+            const element = document.getElementById(id);
+            if (!element) return;
+            
+            const icon = element.querySelector('i');
+            const text = element.querySelector('span');
+            
+            if (isValid) {
+                icon.className = 'fas fa-check-circle';
+                icon.style.color = '#4caf50';
+                text.style.color = '#4caf50';
+            } else {
+                icon.className = 'fas fa-circle';
+                icon.style.color = '#ccc';
+                text.style.color = '#666';
+            }
+        }
+        
+        function checkPasswordMatch() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm_password').value;
+            const matchDiv = document.getElementById('passwordMatch');
+            
+            if (!confirmPassword) {
+                matchDiv.style.display = 'none';
+                return;
+            }
+            
+            matchDiv.style.display = 'block';
+            
+            if (password === confirmPassword) {
+                matchDiv.innerHTML = '<i class="fas fa-check-circle" style="color: #4caf50;"></i> <span style="color: #4caf50;">Passwords match</span>';
+            } else {
+                matchDiv.innerHTML = '<i class="fas fa-times-circle" style="color: #f44336;"></i> <span style="color: #f44336;">Passwords do not match</span>';
+            }
+        }
+        
+        // Hide requirements when clicking outside
+        document.addEventListener('click', function(event) {
+            const passwordInput = document.getElementById('password');
+            const passwordRequirements = document.getElementById('passwordRequirements');
+            const confirmInput = document.getElementById('confirm_password');
+            const nidInput = document.getElementById('nid');
+            const nidRequirements = document.getElementById('nidRequirements');
+            
+            // Don't hide password requirements if clicking on password input, requirements box, or confirm password
+            if (passwordInput && passwordRequirements) {
+                if (!passwordInput.contains(event.target) && 
+                    !passwordRequirements.contains(event.target) && 
+                    !confirmInput.contains(event.target)) {
+                    hidePasswordRequirements();
+                }
+            }
+            
+            // Don't hide NID requirements if clicking on NID input or requirements box
+            if (nidInput && nidRequirements) {
+                if (!nidInput.contains(event.target) && 
+                    !nidRequirements.contains(event.target)) {
+                    hideNIDRequirements();
+                }
+            }
+        });
+        
+        // Keep password requirements visible when hovering over it
+        document.getElementById('passwordRequirements')?.addEventListener('mouseenter', function() {
+            clearTimeout(requirementsTimeout);
+        });
+        
+        document.getElementById('passwordRequirements')?.addEventListener('mouseleave', function() {
+            hidePasswordRequirements();
+        });
+        
+        // Keep NID requirements visible when hovering over it
+        document.getElementById('nidRequirements')?.addEventListener('mouseenter', function() {
+            clearTimeout(nidRequirementsTimeout);
+        });
+        
+        document.getElementById('nidRequirements')?.addEventListener('mouseleave', function() {
+            hideNIDRequirements();
+        });
+    </script>
+</body>
+
+</html>

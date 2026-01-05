@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recover Account with OTP - Secure Voting System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/auth_style.css') }}">
+</head>
+
+<body>
+    <a href="{{ url_for('index') }}" class="home-btn">
+        <i class="fas fa-home"></i> Home
+    </a>
+    
+    <div class="grid-container" id="gridContainer"></div>
+
+    <div class="login-container">
+        <div class="corner-decoration top-left"></div>
+        <div class="corner-decoration top-right"></div>
+        <div class="corner-decoration bottom-left"></div>
+        <div class="corner-decoration bottom-right"></div>
+
+        <div class="header">
+            <div class="scan-line"></div>
+            <h1>RECOVERY</h1>
+            <p class="status-text">OTP Authentication</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="info-box" style="background: rgba(0, 255, 255, 0.1); border: 1px solid rgba(0, 255, 255, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+            <i class="fas fa-info-circle" style="color: #00ffff; margin-right: 8px;"></i>
+            <span style="color: rgba(0, 255, 255, 0.9); font-size: 12px;">
+                Enter the 8-digit OTP that was displayed in the server console.
+            </span>
+        </div>
+
+        <form action="{{ url_for('auth.recover_with_otp') }}" method="POST" id="otpForm">
+            <div class="form-group">
+                <label class="form-label">One-Time Password</label>
+                <div class="input-wrapper">
+                    <i class="fa-solid fa-key field-icon"></i>
+                    <input type="text" name="otp" class="input-field" placeholder="Enter 8-digit OTP" 
+                           maxlength="8" pattern="[0-9]{8}" required autocomplete="off">
+                </div>
+                <small style="color: rgba(0, 255, 255, 0.7); font-size: 11px; margin-top: 5px; display: block;">
+                    Check the server console for your OTP
+                </small>
+            </div>
+
+            <button type="submit" class="submit-btn">
+                Authenticate & Login
+            </button>
+        </form>
+
+        <div class="divider">
+            <span class="divider-text">REMEMBER PASSWORD?</span>
+        </div>
+
+        <div class="register-link">
+            <a href="{{ url_for('auth.login') }}">← Back to Login</a>
+        </div>
+
+        <div class="footer-credit">
+            <p>──Secure National Election & Voting System──</p>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/auth_style.js') }}"></script>
+    <script>
+        // Auto-focus and format OTP input
+        document.querySelector('input[name="otp"]').addEventListener('input', function(e) {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        });
+    </script>
+</body>
+</html>
+
+
+
+
+

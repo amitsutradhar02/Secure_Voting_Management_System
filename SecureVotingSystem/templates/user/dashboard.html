@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Secure Voting System{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h1>Welcome, {{ user.full_name or current_user.username }}!</h1>
+        <p>Your secure voting dashboard</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                <i class="fas fa-poll-h"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ active_elections|length }}</h3>
+                <p>Active Elections</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{{ voting_history|length }}</h3>
+                <p>Total Votes Cast</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3>{% if user.is_verified %}Verified{% else %}Unverified{% endif %}</h3>
+                <p>Account Status</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Active Elections -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-vote-yea"></i> Active Elections</h2>
+                <a href="{{ url_for('election.list_elections') }}" class="btn-link">View All</a>
+            </div>
+            <div class="card-content">
+                {% if active_elections %}
+                    {% for election in active_elections %}
+                    <div class="election-item">
+                        <div class="election-info">
+                            <h3>Election</h3>
+                            <p class="election-date">
+                                <i class="fas fa-calendar"></i> 
+                                {{ election.start_date|format_date_short }} - {{ election.end_date|format_date_short }}
+                            </p>
+                        </div>
+                        <a href="{{ url_for('vote.cast_vote', election_id=election.election_id) }}" class="btn-primary btn-sm">
+                            Cast Vote
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-state">
+                        <i class="fas fa-inbox"></i><br>
+                        No active elections at the moment
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Announcements -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-bullhorn"></i> Recent Announcements</h2>
+                <a href="{{ url_for('post.list_posts') }}" class="btn-link">View All</a>
+            </div>
+            <div class="card-content">
+                {% if posts %}
+                    {% for post in posts %}
+                    <div class="announcement-item">
+                        <div class="announcement-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="announcement-content">
+                            <h4>Announcement</h4>
+                            <p class="announcement-date">{{ post.created_at|time_ago }}</p>
+                        </div>
+                        <a href="{{ url_for('post.view_post', post_id=post.post_id) }}" class="btn-link">Read</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-state">
+                        <i class="fas fa-inbox"></i><br>
+                        No announcements
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting History -->
+    <div class="dashboard-card full-width">
+        <div class="card-header">
+            <h2><i class="fas fa-history"></i> Your Voting History</h2>
+            <a href="{{ url_for('vote.history') }}" class="btn-link">View All</a>
+        </div>
+        <div class="card-content">
+            {% if voting_history %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Election</th>
+                                <th>Vote Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vote in voting_history[:5] %}
+                            <tr>
+                                <td>Election</td>
+                                <td>{{ vote.voted_at|format_date }}</td>
+                                <td><span class="badge badge-success">Completed</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">
+                    <i class="fas fa-inbox"></i><br>
+                    You haven't voted in any elections yet
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

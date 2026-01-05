@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+{% block title %}Add Candidate{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-user-plus"></i> Add Candidate to {{ election.title }}</h1>
+        <a href="{{ url_for('election.view_election', election_id=election.election_id) }}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Election
+        </a>
+    </div>
+
+    <div class="form-card">
+        <form action="{{ url_for('election.add_candidate', election_id=election.election_id) }}" method="POST" class="add-candidate-form">
+            <div class="form-group">
+                <label for="name">
+                    <i class="fas fa-user"></i> Candidate Name *
+                </label>
+                <input type="text" id="name" name="name" placeholder="Enter candidate full name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="party">
+                    <i class="fas fa-flag"></i> Party Name
+                </label>
+                <input type="text" id="party" name="party" placeholder="Enter party or affiliation name">
+            </div>
+
+            <div class="form-group">
+                <label for="description">
+                    <i class="fas fa-align-left"></i> Description
+                </label>
+                <textarea id="description" name="description" rows="6" placeholder="Enter candidate description, background, or platform..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="symbol">
+                    <i class="fas fa-star"></i> Symbol
+                </label>
+                <input type="text" id="symbol" name="symbol" placeholder="Enter election symbol (e.g., Boat, Bicycle, Rose)">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-plus-circle"></i> Add Candidate
+                </button>
+                <a href="{{ url_for('election.view_election', election_id=election.election_id) }}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.add-candidate-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: #667eea;
+    width: 20px;
+}
+
+.form-group input,
+.form-group textarea {
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 150px;
+    line-height: 1.6;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #999;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    padding: 12px 24px;
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
+}
+
+.form-actions .btn-secondary {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        padding: 25px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

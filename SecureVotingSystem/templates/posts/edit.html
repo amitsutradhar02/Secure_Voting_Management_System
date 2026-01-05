@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Edit Post{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Edit Announcement</h1>
+    <form method="POST">
+        <input type="text" name="title" value="{{ post.title }}" required>
+        <textarea name="content" rows="10" required>{{ post.content }}</textarea>
+        <select name="category">
+            <option value="general" {% if post.category == 'general' %}selected{% endif %}>General</option>
+            <option value="election" {% if post.category == 'election' %}selected{% endif %}>Election</option>
+            <option value="important" {% if post.category == 'important' %}selected{% endif %}>Important</option>
+        </select>
+        <button type="submit" class="btn-primary">Update Post</button>
+    </form>
+</div>
+{% endblock %}

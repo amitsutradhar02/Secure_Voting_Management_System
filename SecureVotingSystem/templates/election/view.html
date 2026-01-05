@@ -1,0 +1,208 @@
+{% extends "base.html" %}
+
+{% block title %}{{ election.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-poll"></i> {{ election.title }}</h1>
+        <a href="{{ url_for('election.list_elections') }}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+    </div>
+
+    <div class="election-details">
+        <div class="detail-card">
+            <div class="detail-row">
+                <span class="label">Status:</span>
+                <span class="badge badge-{{ election.status }}">{{ election.status|upper }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">Start Date:</span>
+                <span>{{ election.start_date|format_date }}</span>
+            </div>
+            <div class="detail-row">
+                <span class="label">End Date:</span>
+                <span>{{ election.end_date|format_date }}</span>
+            </div>
+            {% if election.description %}
+            <div class="detail-row full">
+                <span class="label">Description:</span>
+                <p>{{ election.description }}</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if current_user.role == 'admin' %}
+        <div class="admin-actions">
+            <a href="{{ url_for('election.add_candidate', election_id=election.election_id) }}" class="btn-primary">
+                <i class="fas fa-user-plus"></i> Add Candidate
+            </a>
+            {% if election.status == 'active' %}
+            <a href="{{ url_for('election.live_results', election_id=election.election_id) }}" class="btn-primary" style="background: linear-gradient(135deg, #ff4444, #cc0000);">
+                <i class="fas fa-chart-line"></i> Live Results
+            </a>
+            {% endif %}
+            <form method="POST" action="{{ url_for('election.update_status', election_id=election.election_id) }}" style="display: inline;">
+                <select name="status" onchange="this.form.submit()" class="status-select">
+                    <option value="">Change Status</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="active">Active</option>
+                    <option value="completed">Completed</option>
+                    <option value="cancelled">Cancelled</option>
+                </select>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="candidates-section">
+        <h2><i class="fas fa-users"></i> Candidates</h2>
+        
+        {% if candidates %}
+        <div class="candidates-grid">
+            {% for candidate in candidates %}
+            <div class="candidate-card">
+                <div class="candidate-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <h3>{{ candidate.name }}</h3>
+                {% if candidate.party %}
+                <p class="party"><i class="fas fa-flag"></i> {{ candidate.party }}</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="empty-state">No candidates added yet.</p>
+        {% endif %}
+    </div>
+
+    {% if election.status == 'completed' %}
+    <div class="results-link">
+        <a href="{{ url_for('election.view_results', election_id=election.election_id) }}" class="btn-primary btn-lg">
+            <i class="fas fa-chart-bar"></i> View Results
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.election-details {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.detail-card {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.detail-row.full {
+    grid-column: 1 / -1;
+}
+
+.label {
+    font-weight: 600;
+    color: #666;
+    font-size: 14px;
+}
+
+.admin-actions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 2px solid #f0f0f0;
+    display: flex;
+    gap: 15px;
+}
+
+.status-select {
+    padding: 10px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.candidates-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.candidates-section h2 {
+    margin-bottom: 25px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.candidates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.candidate-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 25px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.candidate-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+    color: white;
+    font-size: 24px;
+}
+
+.candidate-card h3 {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 8px;
+}
+
+.party {
+    color: #666;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.results-link {
+    margin-top: 30px;
+    text-align: center;
+}
+
+.btn-lg {
+    padding: 15px 40px;
+    font-size: 16px;
+}
+</style>
+{% endblock %}

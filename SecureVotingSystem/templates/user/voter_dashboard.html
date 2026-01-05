@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Secure Voting System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>Welcome, {{ user.full_name or current_user.username }}! 🗳️</h1>
+            <p>Your secure voting dashboard</p>
+        </div>
+        <div class="header-actions">
+            <a href="{{ url_for('user.profile') }}" class="btn-secondary">
+                <i class="fas fa-user"></i> My Profile
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+            <div class="stat-icon">
+                <i class="fas fa-poll-h"></i>
+            </div>
+            <div class="stat-content">
+                <h3 style="color: white;">{{ active_elections|length }}</h3>
+                <p style="color: rgba(255, 255, 255, 0.9);">Active Elections</p>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+            <div class="stat-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3 style="color: white;">{{ voting_history|length }}</h3>
+                <p style="color: rgba(255, 255, 255, 0.9);">Total Votes Cast</p>
+            </div>
+        </div>
+
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+            <div class="stat-icon">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <div class="stat-content">
+                <h3 style="color: white;">{% if user.is_verified %}✓{% else %}✗{% endif %}</h3>
+                <p style="color: rgba(255, 255, 255, 0.9);">{% if user.is_verified %}Verified{% else %}Unverified{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions-section">
+        <div class="quick-actions">
+            <a href="{{ url_for('support.create_ticket') }}" class="action-btn action-primary">
+                <i class="fas fa-headset"></i>
+                <span>Get Support</span>
+            </a>
+            <a href="{{ url_for('support.my_tickets') }}" class="action-btn action-info">
+                <i class="fas fa-ticket-alt"></i>
+                <span>My Tickets</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <!-- Active Elections -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-vote-yea"></i> Active Elections</h2>
+                <a href="{{ url_for('election.list_elections') }}" class="btn-link">View All</a>
+            </div>
+            <div class="card-content">
+                {% if active_elections %}
+                    {% for election in active_elections %}
+                    <div class="election-item">
+                        <div class="election-info">
+                            <h3>Election #{{ loop.index }}</h3>
+                            <p class="election-date">
+                                <i class="fas fa-calendar"></i> 
+                                {{ election.start_date|format_date_short }} - {{ election.end_date|format_date_short }}
+                            </p>
+                        </div>
+                        <a href="{{ url_for('vote.cast_vote', election_id=election.election_id) }}" class="btn-primary btn-sm">
+                            <i class="fas fa-vote-yea"></i> Cast Vote
+                        </a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-state">
+                        <i class="fas fa-inbox"></i><br>
+                        No active elections at the moment
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Announcements -->
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-bullhorn"></i> Recent Announcements</h2>
+                <a href="{{ url_for('post.list_posts') }}" class="btn-link">View All</a>
+            </div>
+            <div class="card-content">
+                {% if posts %}
+                    {% for post in posts %}
+                    <div class="announcement-item">
+                        <div class="announcement-icon">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <div class="announcement-content">
+                            <h4>Announcement #{{ loop.index }}</h4>
+                            <p class="announcement-date">{{ post.created_at|time_ago }}</p>
+                        </div>
+                        <a href="{{ url_for('post.view_post', post_id=post.post_id) }}" class="btn-link">Read</a>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <p class="empty-state">
+                        <i class="fas fa-inbox"></i><br>
+                        No announcements
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Voting History -->
+    <div class="dashboard-card full-width">
+        <div class="card-header">
+            <h2><i class="fas fa-history"></i> Your Voting History</h2>
+            <a href="{{ url_for('vote.history') }}" class="btn-link">View All</a>
+        </div>
+        <div class="card-content">
+            {% if voting_history %}
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Election</th>
+                                <th>Vote Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for vote in voting_history[:5] %}
+                            <tr>
+                                <td>Election #{{ loop.index }}</td>
+                                <td>{{ vote.voted_at|format_date }}</td>
+                                <td><span class="badge badge-success"><i class="fas fa-check"></i> Completed</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="empty-state">
+                    <i class="fas fa-inbox"></i><br>
+                    You haven't voted in any elections yet
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 40px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.election-item, .announcement-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    transition: all 0.3s ease;
+}
+
+.election-item:hover, .announcement-item:hover {
+    background: #e9ecef;
+    transform: translateX(5px);
+}
+
+.announcement-item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 15px;
+}
+
+.announcement-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: #f8f9fa;
+}
+
+.data-table th, .data-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.badge-success {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.quick-actions-section {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.action-btn {
+    padding: 20px;
+    border-radius: 12px;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: white;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+.action-btn i {
+    font-size: 32px;
+}
+
+.action-btn span {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.action-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.action-primary {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+.action-info {
+    background: linear-gradient(135deg, #4facfe, #00f2fe);
+}
+</style>
+{% endblock %}

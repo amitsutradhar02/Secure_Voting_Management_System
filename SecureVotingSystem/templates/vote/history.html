@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+{% block title %}Voting History{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-history"></i> Your Voting History</h1>
+    </div>
+
+    <div class="history-grid">
+        {% if voting_history %}
+            {% for vote in voting_history %}
+            <div class="history-card">
+                <div class="history-status status-{{ vote.election_status }}">
+                    {{ vote.election_status|upper }}
+                </div>
+                
+                <div class="history-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                
+                <h3>{{ vote.election_title }}</h3>
+                
+                <div class="history-date">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Voted on: {{ vote.voted_at|format_date }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <i class="fas fa-inbox"></i>
+                <h3>No Voting History</h3>
+                <p>You haven't voted in any elections yet.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+}
+
+.history-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 25px;
+}
+
+.history-card {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    position: relative;
+    text-align: center;
+}
+
+.history-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.history-status {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-active {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.status-completed {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.status-upcoming {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.status-cancelled {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.history-icon {
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    color: white;
+    font-size: 24px;
+}
+
+.history-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    padding-right: 80px;
+}
+
+.history-date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.history-date i {
+    color: #667eea;
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 80px 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.empty-state i {
+    font-size: 64px;
+    color: #ddd;
+    margin-bottom: 20px;
+}
+
+.empty-state h3 {
+    color: #666;
+    margin-bottom: 10px;
+    font-size: 24px;
+}
+
+.empty-state p {
+    color: #999;
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    .history-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+}
+</style>
+{% endblock %}

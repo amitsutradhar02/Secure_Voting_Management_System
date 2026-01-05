@@ -1,0 +1,411 @@
+{% extends "base.html" %}
+{% block title %}Respond to Ticket{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="page-header">
+        <h1><i class="fas fa-reply"></i> Respond to Ticket</h1>
+        <a href="{{ url_for('support.admin_tickets') }}" class="btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Tickets
+        </a>
+    </div>
+
+    <div class="ticket-info-card">
+        <div class="ticket-header">
+            <div class="ticket-badges">
+                <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority|upper }}</span>
+                <span class="badge badge-{{ ticket.status }}">{{ ticket.status|upper }}</span>
+            </div>
+            <h2><i class="fas fa-ticket-alt"></i> {{ ticket.subject }}</h2>
+        </div>
+        
+        <div class="ticket-details">
+            <div class="detail-item">
+                <div class="detail-icon">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="detail-content">
+                    <h3>From</h3>
+                    <p>{{ ticket.username }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-section">
+            <div class="message-header">
+                <i class="fas fa-comment-alt"></i>
+                <h3>User's Message</h3>
+            </div>
+            <div class="message-content">
+                <p>{{ ticket.message }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-card">
+        <form method="POST" class="respond-form">
+            <div class="form-group">
+                <label for="response">
+                    <i class="fas fa-comment-dots"></i> Your Response *
+                </label>
+                <textarea id="response" name="response" rows="8" placeholder="Enter your response to the user..." required>{{ ticket.admin_response or '' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="status">
+                    <i class="fas fa-info-circle"></i> Update Status
+                </label>
+                <select id="status" name="status">
+                    <option value="in_progress" {% if ticket.status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>Closed</option>
+                    <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+                </select>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send Response
+                </button>
+                <a href="{{ url_for('support.admin_tickets') }}" class="btn-secondary">
+                    <i class="fas fa-times"></i> Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 20px;
+}
+
+.page-header h1 {
+    font-size: 32px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    flex: 1;
+}
+
+.btn-secondary {
+    padding: 12px 24px;
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+    white-space: nowrap;
+}
+
+.btn-secondary:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.ticket-info-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.ticket-header {
+    border-bottom: 2px solid #f0f0f0;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.ticket-badges {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.badge-priority-high {
+    background: #ffebee;
+    color: #c62828;
+}
+
+.badge-priority-medium {
+    background: #fff3e0;
+    color: #e65100;
+}
+
+.badge-priority-low {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.badge-open {
+    background: #e3f2fd;
+    color: #1565c0;
+}
+
+.badge-in_progress {
+    background: #fff9c4;
+    color: #f57f17;
+}
+
+.badge-closed {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.ticket-header h2 {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.ticket-details {
+    margin-bottom: 20px;
+}
+
+.detail-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    border-left: 4px solid #667eea;
+}
+
+.detail-icon {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 18px;
+    flex-shrink: 0;
+}
+
+.detail-content h3 {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 5px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+
+.detail-content p {
+    font-size: 16px;
+    color: #333;
+    font-weight: 500;
+    margin: 0;
+}
+
+.message-section {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 20px;
+    border-left: 4px solid #2196f3;
+}
+
+.message-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    color: #1976d2;
+}
+
+.message-header i {
+    font-size: 20px;
+}
+
+.message-header h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 0;
+    color: #1976d2;
+}
+
+.message-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
+}
+
+.message-content p {
+    color: #333;
+    line-height: 1.6;
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.form-card {
+    background: white;
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.form-card:hover {
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.respond-form {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-group label i {
+    color: #667eea;
+    width: 20px;
+}
+
+.form-group textarea,
+.form-group select {
+    padding: 14px 18px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.3s ease;
+    background: #f8f9fa;
+}
+
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #667eea;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 200px;
+    line-height: 1.6;
+}
+
+.form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    padding-right: 45px;
+}
+
+.form-group textarea::placeholder {
+    color: #999;
+}
+
+.form-actions {
+    display: flex;
+    gap: 15px;
+    padding-top: 10px;
+}
+
+.btn-primary {
+    flex: 1;
+    padding: 14px 24px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+    font-family: 'Poppins', sans-serif;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+}
+
+.form-actions .btn-secondary {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        padding: 25px;
+    }
+
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-header h1 {
+        font-size: 24px;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+
+    .ticket-info-card {
+        padding: 20px;
+    }
+}
+</style>
+{% endblock %}
